@@ -19,14 +19,10 @@ import com.textocat.api.sdk.model.EntityAnnotationCategory;
 public class ClustererPreparer {
 	private Clusterer clusterer;
 	private File arffFile;
+	private Instances data;
 	
 	public ClustererPreparer(File arffFile) {
 		clusterer = new EM();
-		try {
-			((EM)clusterer).setNumClusters(6);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		this.arffFile = arffFile;;
 	}
 	
@@ -35,13 +31,25 @@ public class ClustererPreparer {
 		this.arffFile = arffFile;
 	}
 	
-	public String clusterize(String dominanteAttributeGroup, double linearCoef, double exponentialCoef) {
+	public String clusterize(int numClusters, String dominanteAttributeGroup, 
+						double linearCoef, double exponentialCoef) 
+	{
+		//первичная проверка
 		if (!arffFile.getAbsolutePath().endsWith(".arff")) {
 			System.err.println("Cannot read the file because of wrong format. Needs the arff file!");
 			System.exit(1);
 		}
+		
+		//настраиваем число кластеров
 		try {
-			Instances data = DataSource.read(arffFile.getAbsolutePath());
+			((EM)clusterer).setNumClusters(numClusters);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//кластеризация
+		try {
+			data = DataSource.read(arffFile.getAbsolutePath());
 			for (Instance i : data) {
 				for (int j = 0; j < i.numAttributes(); j++) {
 					EntityAnnotationCategory cat = null;
@@ -66,19 +74,16 @@ public class ClustererPreparer {
 				}
 			}
 			//normal
-			/*options = new String[2];
+			/*String[] options = new String[2];
 			options[0] = "-t";
 			options[1] = arffFile.getAbsolutePath();
-			System.out.println(ClusterEvaluation.evaluateClusterer(new EM(), options));*/
+			System.out.println(ClusterEvaluation.evaluateClusterer(clusterer, options));*/
 			
 			//manual call
 			clusterer.buildClusterer(data);
 			ClusterEvaluation evaluator = new ClusterEvaluation();
 			evaluator.setClusterer(clusterer);
 			evaluator.evaluateClusterer(new Instances(data));
-			/*for (Instance i : data) {
-				i.classAttribute();
-			}*/
 			return evaluator.clusterResultsToString();
 			
 			//cross-validation for density
@@ -93,6 +98,34 @@ public class ClustererPreparer {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public int[][] getClustersContent() {
+		//массив, отвечающий за количество экземпляров в каждом кластере
+		int[] nums = new int[((EM)clusterer).getNumClusters()]; 
+		//массив, отвечающий за принадлежность каждого документа определённому кластеру
+		int[] classes = new int[data.size()]; 
+		for (int i = 0; i < data.size(); i++) {
+			try {
+				int classifier = clusterer.clusterInstance(data.get(i)); //какому кластеру принадлежит
+				classes[i] = classifier;  //запоминаем это здесь
+				nums[classifier]++;  //в соответствующей ячейке увеличиваем количество на 1
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		int[][] res = new int[nums.length][];
+		for (int i = 0; i < nums.length; i++) {
+			res[i] = new int[nums[i]];
+			int count = 0;  
+			for (int j = 0; j < classes.length; j++) {
+				if (classes[j] == i) {
+					res[i][count] = j;
+					count++;
+				}
+			}
+		}
+		return res;
 	}
 	
 	public Clusterer getClusterer() {

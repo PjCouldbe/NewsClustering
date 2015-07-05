@@ -3,9 +3,6 @@ package clustering;
 import static clustering.StoreData.PARSER;
 //import static clustering.StoreData.annotatedDocuments;
 
-
-
-
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -45,12 +42,12 @@ public class DFPreparer {
 			synchronized (sync) {
 				for (int i = 0; i < data.size(); i++) {
 					try {
-						info = PARSER.runParser(data.get(i), "UTF-8");
-						length = data.get(i).length();
-						if (info.size() == 0) {
+						info = PARSER.runParser(data.get(i), "UTF-8"); //парсим документ
+						length = data.get(i).length();  //запоминаем его длину
+						if (info.size() == 0) {   //если документ пустой, он нам не нужен
 							continue;
 						} 
-						counter = i;
+						counter = i;  //счётчик для второго потока
 						
 						sync.notify();
 						//System.out.print(1);
@@ -84,9 +81,9 @@ public class DFPreparer {
 							e.printStackTrace();
 						}
 					}
-					m = info;
-					info = new LinkedList<>();
-					num = counter;
+					m = info;   //достаём распарсенный документ
+					info = new LinkedList<>();  //обнуляем глобальную переменную
+					num = counter; //достаём счётчик
 					sync.notify();
 				}
 				//создаём новый ConceptDocument
@@ -123,6 +120,7 @@ public class DFPreparer {
 								if (temp.containsKey("geo") 
 										|| temp.containsKey("first-name") 
 										|| temp.containsKey("surname") 
+										|| temp.containsKey("middle-name")
 										|| temp.containsKey("abbreviation")) 
 								{
 									//заменяем первую букву на заглавную

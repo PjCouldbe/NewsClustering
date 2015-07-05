@@ -9,7 +9,7 @@
 		<param name="ConversionPattern" 
 		  value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" />
 	    </layout>
-	    <param name="append" value="false"/>
+	    <!-- <param name="append" value="false"/> -->
 	</appender>
  
 	<root>
