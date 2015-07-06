@@ -29,17 +29,17 @@ public class DataPreparer {
 	}
 	
 	public ArrayList<String> prepare(int capacity) {
-		StoreData.conceptedDocuments = new ConceptedDocument[StoreData.DOCS];
-		DFPreparer.annotatedDocuments = new AnnotatedDocument[StoreData.DOCS];
 		ArrayList<String> res = new ArrayList<>(capacity);
 		try (BufferedReader in = new BufferedReader(new FileReader(datafile))) {
 			int counter = capacity;
 			while (in.ready() && counter > 0) {
 				String s = in.readLine();
 				if (!s.matches(dates)) {
-					s = s.replaceAll(" *(\\\\n)[(\\\\n) \t]*", ". ");
-					s = s.replaceAll(" *\\.[\\. ]*", ". ");
-					res.add(s);
+					s = s.replaceAll(" *(\\\\n)[(\\\\n) \\s]*", ". ");
+					s = s.replaceAll("\\s*\\.[[^A-Za-zА-Яа-я0-9_-]\\.]*", ". ");
+					if (s != null && s.length() > 0) {
+						res.add(s);
+					}
 				}
 				counter--;
 			}
@@ -47,6 +47,8 @@ public class DataPreparer {
 			e.printStackTrace();
 			res = null;
 		}
+		StoreData.conceptedDocuments = new ConceptedDocument[res.size()];
+		DFPreparer.annotatedDocuments = new AnnotatedDocument[res.size()];
 		return data = res;
 	}
 	
@@ -81,7 +83,7 @@ public class DataPreparer {
 		//da.annotate(data);
 		synchronized (StoreData.sync) {
 			try {
-				System.out.println("stopped");
+				//System.out.println("stopped");
 				StoreData.sync.wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
