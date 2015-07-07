@@ -21,12 +21,12 @@ public class Main {
 		final AttributeFile arffFile = new AttributeFile(StoreData.PATH);	
 		ConceptAttribute[] attributes = new ConceptAttribute[StoreData.concepts.size()];
 		for (int i = 0; i < attributes.length; i++) {
-			String name;
+			String name = i + "):";
 			if (StoreData.concepts.get(i) != null && StoreData.concepts.get(i).getWords() != null
 					&& StoreData.concepts.get(i).getWords().size() > 0) {
-				name = toString(StoreData.concepts.get(i).getWords());
+				name += toString(StoreData.concepts.get(i).getWords());
 			} else {
-				name = "Concept" + i;
+				name += "Concept" + i;
 			}
 			attributes[i] = new ConceptAttribute(name, i);
 		}
@@ -49,15 +49,15 @@ public class Main {
 				synchronized (sync) {
 					System.out.println("Окончание кластеризации на потоке ACTORS. "
 							+ "Вывод результатов в файл.");
-					//System.out.println(s1);
+					System.out.println(s1);
 					
 					//Вывод Evaluation Result String в файл
-					File resultFile = new File(actorsDir.getAbsolutePath() + "\\ResultString.txt");
+					/*File resultFile = new File(actorsDir.getAbsolutePath() + "\\ResultString.txt");
 					try (PrintWriter pw = new PrintWriter(new FileWriter(resultFile), true)) {
 						pw.println(s1);
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
+					}*/
 					
 					//Вывод содержимого кластеров в файлы
 					int[][] content = cp1.getClustersContent();
@@ -98,15 +98,15 @@ public class Main {
 				synchronized (sync) {
 					System.out.println("Окончание кластеризации на потоке EVENTS. "
 							+ "Вывод результатов в файл.");
-					//System.out.println(s2);
+					System.out.println(s2);
 					
 					//Вывод Evaluation Result String в файл
-					File resultFile = new File(eventsDir.getAbsolutePath() + "\\ResultString.txt");
+					/*File resultFile = new File(eventsDir.getAbsolutePath() + "\\ResultString.txt");
 					try (PrintWriter pw = new PrintWriter(new FileWriter(resultFile), true)) {
 						pw.println(s2);
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
+					}*/
 					
 					//Вывод содержимого кластеров в файлы
 					int[][] content = cp2.getClustersContent();
@@ -147,15 +147,15 @@ public class Main {
 				synchronized (sync) {
 					System.out.println("Окончание кластеризации на потоке PLACES. "
 							+ "Вывод результатов в файл.");
-					//System.out.println(s3);
+					System.out.println(s3);
 					
 					//Вывод Evaluation Result String в файл
-					File resultFile = new File(placesDir.getAbsolutePath() + "\\ResultString.txt");
+					/*File resultFile = new File(placesDir.getAbsolutePath() + "\\ResultString.txt");
 					try (PrintWriter pw = new PrintWriter(new FileWriter(resultFile), true)) {
 						pw.println(s3);
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
+					}*/
 					
 					//Вывод содержимого кластеров в файлы
 					int[][] content = cp3.getClustersContent();
